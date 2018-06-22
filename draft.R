@@ -4,6 +4,7 @@ library(reticulate)
 library(keras)
 gym <- import("gym")
 source("model.R")
+source("utils.R")
 
 # parameters --------------------------------------------------------------
 
@@ -20,22 +21,17 @@ env <- gym$make(environment_name)
 env_shape <- unlist(env$observation_space$shape)
 experience <- vector("list", replay_memory)
 
-to_gs <- function(x) {
-  apply(x, c(1,2), mean)
-}
-
-
-
-state_t <- env$reset()
-state_t <- to_gs(state_t)
-state_t <- abind::abind(state_t, state_t, state_t, state_t, along = 3)
-dim(state_t) <- c(1, dim(state_t))
-
 model <- build_model(dim(state_t)[-1], n_actions = env$action_space$n)
 
-t <- 0
+t <- 1
+state_t <- list(
+  stacked_frames = env$reset() %>%
+    to_gs() %>%
+    abind::abind(., ., .,., along = 3) %>%
+    abind::abind(along = 0.1)
+)
+
 while (TRUE) {
-  
   
   
   
