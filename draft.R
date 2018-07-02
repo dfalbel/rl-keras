@@ -67,7 +67,7 @@ while (TRUE) {
   }
   
   step <- env$step(action)
-  env$render()
+  # env$render()
   
   x_t1 <- step[[1]] %>% 
     keras::image_array_resize(65, 40) %>% 
