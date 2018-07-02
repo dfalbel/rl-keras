@@ -3,6 +3,8 @@ build_model <- function(input_shape = c(210, 160, 4), n_actions = 4) {
   input <- layer_input(input_shape)
   
   output <- input %>%
+    layer_image_resize(size = c(65, 40)) %>%
+    layer_image_rgb_to_grayscale() %>%
     layer_conv_2d(filters = 32, kernel_size = c(4,4)) %>%
     layer_max_pooling_2d(pool_size = c(4,4)) %>%
     layer_conv_2d(filters = 64, kernel_size = c(2,2)) %>%
