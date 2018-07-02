@@ -2,6 +2,7 @@
 
 library(reticulate)
 library(keras)
+library(kextra)
 library(purrr)
 gym <- import("gym")
 source("model.R")
@@ -70,8 +71,6 @@ while (TRUE) {
   env$render()
   
   x_t1 <- step[[1]] %>% 
-    keras::image_array_resize(65, 40) %>% 
-    to_gs() %>% 
     abind::abind(along = 3)
   
   s_t1 <- abind::abind(x_t1, state_t$s_t[,,,2:4], along = 3) %>%
