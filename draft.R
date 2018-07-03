@@ -114,6 +114,12 @@ while (TRUE) {
   }
     
   t <- t + 1 
+  
+  if (t %% 100000 == 0) {
+    save_model_hdf5(model$model, "model.hdf5", overwrite = TRUE, include_optimizer = TRUE)
+    save_model_weights_hdf5(model$model, "model_weigths.hdf5", overwrite = TRUE)
+  }
+  
   frames <- frames + 1
 }
 
