@@ -3,16 +3,11 @@ build_model <- function(input_shape = c(210, 160, 4), n_actions = 4) {
   input <- layer_input(input_shape)
   
   output <- input %>%
-    layer_image_resize(size = c(65, 40)) %>%
-    layer_image_rgb_to_grayscale() %>%
-    layer_conv_2d(filters = 32, kernel_size = c(4,4)) %>%
-    layer_max_pooling_2d(pool_size = c(4,4)) %>%
-    layer_conv_2d(filters = 64, kernel_size = c(2,2)) %>%
-    layer_max_pooling_2d(pool_size = c(2,2)) %>%
-    layer_conv_2d(filters = 64, kernel_size = c(2,2)) %>%
-    layer_max_pooling_2d(pool_size = c(2,2)) %>%
+    layer_lambda(function(x) {x/255}) %>%
+    layer_conv_2d(filters = 16, kernel_size = c(8,8), strides = c(4,4), activation = "relu") %>%
+    layer_conv_2d(filters = 32, kernel_size = c(4,4), strides = c(2,2), activation = "relu") %>%
     layer_flatten() %>%
-    layer_dense(128, activation = "relu") %>%
+    layer_dense(256, activation = "relu") %>%
     layer_dense(n_actions)
   
   model <- keras_model(input, output)
@@ -27,7 +22,7 @@ build_model <- function(input_shape = c(210, 160, 4), n_actions = 4) {
   model2 %>%
     compile(
       loss = "mse",
-      optimizer = "adam"
+      optimizer = keras::optimizer_adam(lr = 0.00001)
     )
   
   list(

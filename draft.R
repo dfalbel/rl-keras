@@ -10,12 +10,12 @@ source("utils.R")
 
 # parameters --------------------------------------------------------------
 
-observe_iter <- 25000 # number of steps to observe before starting training
+observe_iter <- 100000 # number of steps to observe before starting training
 explore_iter <- 10000000 # number of iterations to do exploration
-replay_memory <- 25000 # number of transitions to remember
+replay_memory <- 100000 # number of transitions to remember
 environment_name <- "Breakout-v0"
-final_epsilon = 0.001 # final value of epsilon
-initial_epsilon = 0.1 # starting value of epsilon
+final_epsilon = 0.01 # final value of epsilon
+initial_epsilon = 0.6 # starting value of epsilon
 batch_size <- 32
 gamma <- 0.99
 n_episodes <- 5000
@@ -71,6 +71,8 @@ while (TRUE) {
   # env$render()
   
   x_t1 <- step[[1]] %>% 
+    keras::image_array_resize(65, 40) %>%
+    to_gs() %>%
     abind::abind(along = 3)
   
   s_t1 <- abind::abind(x_t1, state_t$s_t[,,,2:4], along = 3) %>%
@@ -79,7 +81,7 @@ while (TRUE) {
   state_t <- list(
     s_t = state_t$s_t,
     action = action,
-    reward = step[[2]],
+    reward = sign(step[[2]]),
     s_t1 = s_t1,
     terminal = step[[3]]
   )
@@ -116,8 +118,8 @@ while (TRUE) {
   t <- t + 1 
   
   if (t %% 100000 == 0) {
-    save_model_hdf5(model$model, "model.hdf5", overwrite = TRUE, include_optimizer = TRUE)
-    save_model_weights_hdf5(model$model, "model_weigths.hdf5", overwrite = TRUE)
+    save_model_hdf5(models$model, "model.hdf5", overwrite = TRUE, include_optimizer = TRUE)
+    save_model_weights_hdf5(models$model, "model_weigths.hdf5", overwrite = TRUE)
   }
   
   frames <- frames + 1
