@@ -4,14 +4,14 @@ grayscale <- function(x) {
   array(as.integer(x), dim = dims)
 }
 
-downsample <- function(x) {
+downsample <- function(x, by = 2) {
   dims <- dim(x)
-  x[seq(1, to = dims[1], by = 2), seq(1, to = dims[2], by = 2),]
+  x[seq(1, to = dims[1], by = by), seq(1, to = dims[2], by = by),]
 }
 
 preprocess <- function (x) {
   x %>%
-    downsample() %>%
+    downsample(by = 4) %>%
     grayscale()
 }
 
