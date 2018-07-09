@@ -13,7 +13,7 @@ source("utils.R")
 observe_iter <- 100000 # number of steps to observe before starting training
 explore_iter <- 1000000 # number of iterations to do exploration
 replay_memory <- 100000 # number of transitions to remember
-environment_name <- "Breakout-v0"
+environment_name <- "BreakoutDeterministic-v4"
 final_epsilon = 0.1 # final value of epsilon
 initial_epsilon = 1 # starting value of epsilon
 batch_size <- 32
@@ -71,9 +71,7 @@ while (TRUE) {
   # env$render()
   
   x_t1 <- step[[1]] %>% 
-    keras::image_array_resize(65, 40) %>%
-    to_gs() %>%
-    abind::abind(along = 3)
+    preprocess()
   
   s_t1 <- abind::abind(
     x_t1, 
