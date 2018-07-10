@@ -1,5 +1,3 @@
-# inspiration: https://yanpanlau.github.io/2016/07/10/FlappyBird-Keras.html
-
 library(reticulate)
 library(zeallot)
 library(keras)
@@ -12,7 +10,7 @@ source("experience.R")
 
 # parameters --------------------------------------------------------------
 
-observe <- 10 # number of episodes to observe before starting training
+observe <- 500 # number of episodes to observe before starting training
 explore <- 2000 # nuber of episodes to do exploration
 episodes <- 5000 # total number of episodes
 replay_memory <- 100000 # number of transitions to remember
