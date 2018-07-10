@@ -1,4 +1,3 @@
-
 build_model <- function(input_shape = c(210, 160, 4), n_actions = 4) {
   input <- layer_input(input_shape)
   
@@ -10,24 +9,24 @@ build_model <- function(input_shape = c(210, 160, 4), n_actions = 4) {
     layer_dense(256, activation = "relu") %>%
     layer_dense(n_actions)
   
-  model <- keras_model(input, output)
+  score_model <- keras_model(input, output)
   
   action <- layer_input(shape = n_actions)
   
   scalar <- layer_multiply(list(output, action)) %>%
    layer_lambda(f = function(x) k_sum(x, axis = 2, keepdims = TRUE))
   
-  model2 <- keras_model(list(input, action), scalar)
+  action_model <- keras_model(list(input, action), scalar)
   
-  model2 %>%
+  action_model %>%
     compile(
       loss = "mse",
       optimizer = keras::optimizer_adam(lr = 0.00001)
     )
   
   list(
-    model = model,
-    model2 = model2
+    score_model = score_model,
+    action_model = action_model
   )
 }
 
