@@ -58,8 +58,6 @@ play_episode <- function(env, epsilon, models, experience, train) {
   score
 }
 
-library(tictoc)
-
 train_step <- function(models, experience, n_actions) {
 
   c(s_t, s_t1, terminal, action, reward) %<-% experience$sample(32)

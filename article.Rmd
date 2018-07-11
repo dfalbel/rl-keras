@@ -1,0 +1,38 @@
+---
+title: "Playing Atari with Keras and R"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this article we will implement the famous paper from DeepMind: [*Playing Atari with Deep Reinforcement Learning*](https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf) in R using Keras. This paper introduced the first deep learning model that successfully learned control policies directly from high-dimensional sensory input using reinforcement learning.
+
+The DeepMinds's algorithm is trained on raw pixels from Atari games and estimates future rewards for each possible action. The model is a convolutional neural network trained with a variant of the [Q-Learning](https://en.wikipedia.org/wiki/Q-learning) algorithm, which we will attempt to explain during this article.
+
+The code was not published with the paper, but the results were reproduced and published by severeal people on the internet. Particularly, [this post](https://yanpanlau.github.io/2016/07/10/FlappyBird-Keras.html) and the [referenced implementation](https://github.com/yenchenlin/DeepLearningFlappyBird) were very useful when writing this article. Also, [this article](https://becominghuman.ai/lets-build-an-atari-ai-part-1-dqn-df57e8ff3b26) from [Becoming Human](https://becominghuman.ai) was very inspiring.
+
+# Reinforcement Learning
+
+We recommend reading the [*Part-0: Intro to RL*](https://becominghuman.ai/lets-build-an-atari-ai-part-0-intro-to-rl-9b2c5336e0ec) from Becoming Human as a smooth introduction to [Reinforcement Learning](https://en.wikipedia.org/wiki/Reinforcement_learning).
+
+## Q-Learning
+
+## Deep Q-Learning
+
+# Implementation in R
+
+## Gym
+
+
+
+
+
+
+
+
+
+
+
+
