@@ -13,9 +13,13 @@ The DeepMinds's algorithm is trained on raw pixels from Atari games and estimate
 
 The code was not published with the paper, but the results were reproduced and published by severeal people on the internet. Particularly, [this post](https://yanpanlau.github.io/2016/07/10/FlappyBird-Keras.html) and the [referenced implementation](https://github.com/yenchenlin/DeepLearningFlappyBird) were very useful when writing this article. Also, [this article](https://becominghuman.ai/lets-build-an-atari-ai-part-1-dqn-df57e8ff3b26) from [Becoming Human](https://becominghuman.ai) was very inspiring.
 
+We only tested our implementation for the Atari Breakout game, but it should also work for other Atari games.
+
 # Reinforcement Learning
 
-We recommend reading the [*Part-0: Intro to RL*](https://becominghuman.ai/lets-build-an-atari-ai-part-0-intro-to-rl-9b2c5336e0ec) from Becoming Human as a smooth introduction to [Reinforcement Learning](https://en.wikipedia.org/wiki/Reinforcement_learning).
+Reinforcement learning is an area of Machine Learning that has been gaining a lot of attention recently. A good definition comes from Sutton and Barto's book *Reinforcement Learning: An Introduction*:
+
+> Reinforcement learning is learning what to do—how to map situations to actions—so as to maximize a numerical reward signal. The learner is not told which actions to take, but instead must discover which actions yield the most reward by trying them. In the most interesting and challenging cases, actions may affect not only the immediate reward but also the next situation and, through that, all subsequent rewards. These two characteristics—trial-and-error search and delayed reward—are the two most important distinguishing features of reinforcement learning.
 
 ## Q-Learning
 

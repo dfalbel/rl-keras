@@ -11,12 +11,12 @@ source("experience.R")
 # parameters --------------------------------------------------------------
 
 observe <- 500 # number of episodes to observe before starting training
-explore <- 2000 # nuber of episodes to do exploration
+explore <- 4000 # nuber of episodes to do exploration
 episodes <- 5000 # total number of episodes
 replay_memory <- 100000 # number of transitions to remember
 environment_name <- "BreakoutDeterministic-v4"
 initial_epsilon <- 1
-final_epsilon <- 0.05
+final_epsilon <- 0.1
 batch_size <- 32
 gamma <- 0.99
 
