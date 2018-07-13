@@ -1,7 +1,25 @@
 ---
-title: "Playing Atari with Keras and R"
-author: "Daniel Falbel and Fernando Barscevicius"
-output: html_document
+title: "Playing Atari Breakout with Keras and R"
+description: |
+  In this article we will implement the famous paper from DeepMind: *Playing Atari 
+  with Deep Reinforcement Learning* in R using Keras. This paper introduced the 
+  first deep learning model that successfully learned control policies directly 
+  from high-dimensional sensory input using reinforcement learning.
+author:
+  - name: Daniel Falbel 
+    url: http://github.com/dfalbel
+    affiliation: Curso-R
+    affiliation_url: http://curso-r.com
+  - name: Fernando Barscevicius
+    url: 
+    affiliation: Curso-R
+    affiliation_url: http://curso-r.com
+date: 07-17-2018
+creative_commons: CC BY
+repository_url: https://github.com/dfalbel/rl-keras
+output: 
+  radix::radix_article:
+    self_contained: false
 ---
 
 ```{r setup, include=FALSE}
@@ -66,11 +84,28 @@ initial_state <- env$reset()
 Calling `env$reset()` will return a 3d array with the initial frame of the game.
 We can render it by calliing `env$render()`.
 
-With Gym we can also perform actions in the game by using the method `step`.
+With Gym we can also perform actions in the game by using the method `step`. We use the argument `action` to tell the environment which action to perform. Each different action is represented by an integer value. 
 
 ```{r}
-result <- env$step(0L)
+result <- env$step(action = 0L)
 ```
+
+Gym does not document which action is performed by each integer value, but we can figure out by running actions in the emulator and looking at the rendered output. We can also get the number of possible actions by accessing the `env$action_space$n` member.
+
+In our particular case, ie. the Atari Breakout game, there are 4 possible actions and the following table maps actions to corresponding integer values.
+
+| 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
