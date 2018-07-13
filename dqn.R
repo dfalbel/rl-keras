@@ -46,6 +46,14 @@ for (i in seq_len(episodes)) {
   last100 <- tail(history[!is.na(history)], 100) %>% mean() %>% round(2)
   time <- round(time[3], 2)
   
+  # save model weights
+  if(i %% 500 == 0)
+    save_model_weights_hdf5(
+      models$score_model, 
+      "model_weights.hdf5", 
+      overwrite = TRUE
+    )
+  
   cat(glue::glue("Episode: {i} | Score: {history[i]} | Mean: {last100} | Elapsed: {time} sec"), "\n")
 }
 
