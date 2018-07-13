@@ -1,5 +1,6 @@
 ---
 title: "Playing Atari with Keras and R"
+author: "Daniel Falbel and Fernando Barscevicius"
 output: html_document
 ---
 
