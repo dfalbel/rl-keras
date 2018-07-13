@@ -57,6 +57,26 @@ You must be careful to install it to the same environment that Keras and TensorF
 
 Now that we have Gym installed we can "make" an environment and run some random actions to understand how it works.
 
+```{r}
+gym <- import("gym")
+env <- gym$make("BreakoutDeterministic-v4")
+initial_state <- env$reset()
+```
+
+Calling `env$reset()` will return a 3d array with the initial frame of the game.
+We can render it by calliing `env$render()`.
+
+With Gym we can also perform actions in the game by using the method `step`.
+
+```{r}
+result <- env$step(0L)
+```
+
+
+
+
+
+
 
 
 
