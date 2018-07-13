@@ -12,14 +12,15 @@ author:
     affiliation_url: http://curso-r.com
   - name: Fernando Barscevicius
     url: 
-    affiliation: Curso-R
-    affiliation_url: http://curso-r.com
+    affiliation: Marketdata
+    affiliation_url: http://marketdata.com.br
 date: 07-17-2018
 creative_commons: CC BY
 repository_url: https://github.com/dfalbel/rl-keras
 output: 
   radix::radix_article:
     self_contained: false
+bibliography: biblio.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -74,6 +75,12 @@ py_install("gym[atari]", envname = "r-tensorflow")
 You must be careful to install it to the same environment that Keras and TensorFlow are installed since we will need to load all of them in the same session. Gym has lot's of dependencies that are not installed by default, to install the Atari dependencies that we are going to use we used `gym[atari]` in the pip package name.
 
 Now that we have Gym installed we can "make" an environment and run some random actions to understand how it works.
+We are going to use an environment called BreakoutDeterministic-v4. It differs from the canonical Breakout-v0 in two ways related noise added when performing actions:
+
+* It doesn't repeat the performed action for more randomly chosen number of frames.
+* It doesn't randomly repeat the previous action.
+
+These differences make BreakoutDeterministic-v4 easier to learn than Breakout-v0.
 
 ```{r}
 gym <- import("gym")
@@ -90,11 +97,141 @@ With Gym we can also perform actions in the game by using the method `step`. We 
 result <- env$step(action = 0L)
 ```
 
-Gym does not document which action is performed by each integer value, but we can figure out by running actions in the emulator and looking at the rendered output. We can also get the number of possible actions by accessing the `env$action_space$n` member.
+The output of running a `step` in the environment is the next state of the game. The sate is represented by a list with the following structure:
 
-In our particular case, ie. the Atari Breakout game, there are 4 possible actions and the following table maps actions to corresponding integer values.
+```
+List of 4
+ $ : int [1:210, 1:160, 1:3] 0 0 0 0 0 0 0 0 0 0 ...
+ $ : num 0
+ $ : logi FALSE
+ $ :List of 1
+  ..$ ale.lives: int 5
+```
 
-| 
+The first element is an RGB array of the next frame, the second element is the reward received by performing the action and the thir is a boolean value indicating if the game has ended. The fourth element can contain other informations about the game, in this case, it returns the number of lives.
+
+We can get the meaning of each action with `env.unwrapped.get_action_meanings()`. In our particular case, ie. the Atari Breakout game, there are 4 possible actions and the following table maps actions to corresponding integer values.
+
+```{r, eval=TRUE, echo=FALSE}
+knitr::kable(data.frame(
+  "Action" = c("NOOP (Do nothing)", "FIRE (Get the ball)", "RIGHT", "LEFT" ),
+  "Integer" = c(0, 1, 2, 3)
+))
+```
+
+## Pre-processing
+
+Now that we know about Gym, let's define some functions to preprocess the state before saving it to our experience memory. We will transform each frame to grayscale since the colors doesn't matter in this game and then we will rescale the image to save RAM memory.
+
+We implemented 3 functions to do this:
+
+```{r}
+# transforms the input image to grayscale
+grayscale <- function(x) {
+  dims <- c(dim(x)[-3], 1)
+  x <- (x[,,1, drop = FALSE] + x[,,2, drop = FALSE] + x[,,3, drop = FALSE])/3
+  array(as.integer(x), dim = dims)
+}
+
+# reduces the scale of the image by skiping some pixels
+downsample <- function(x, by = 2) {
+  dims <- dim(x)
+  x[seq(1, to = dims[1], by = by), seq(1, to = dims[2], by = by),]
+}
+
+# does both downsampling and grayscale.
+preprocess <- function (x) {
+  x %>%
+    downsample(by = 4) %>%
+    grayscale()
+}
+```
+
+It's important to note that inside `grayscale` we transformed the resulting array to an integer array in order to save memmory.
+
+## Experience
+
+Now let's define an auxiliary class that will help us to keep the replay memory. Since we have to keep a large list of states, we need to take care to avoid copies. This is challeging in R because of the *copy-on-modify* beahvior.[@wickham2014advanced]. We implement an `R6` class manage storing and sampling from the replay memory.
+
+```{r}
+Experience <- R6::R6Class(
+  "Experience",
+  
+  public = list(
+    
+    # class initialization
+    initialize = function(max_size = 100000) {
+      private$memory <- vector(mode = "list", max_size)
+      private$max_size <- max_size
+    },
+    
+    # adds transitions to the replay memory
+    push = function(s_t, s_t1, terminal, action, reward) {
+      
+      private$memory[[private$i]] <- list(
+        s_t = s_t,
+        s_t1 = s_t1,
+        terminal = as.logical(terminal),
+        action = as.integer(action),
+        reward = reward
+      )
+      
+      if (private$i == private$max_size) {
+        private$i <- 1L
+        private$full <- TRUE
+      } else {
+        private$i <- private$i + 1 
+      }
+      
+      invisible(TRUE)
+    },
+    
+    # sample elements from the replay buffer
+    sample = function(size = 32) {
+      
+      n <- ifelse(private$full, private$max_size, private$i - 1)
+      ids <- sample.int(n, size)
+      
+      batch <- purrr::transpose(private$memory[ids])
+      
+      list(
+        s_t = abind::abind(batch$s_t, along = 0.1),
+        s_t1 = abind::abind(batch$s_t1, along = 0.1),
+        terminal = unlist(batch$terminal),
+        action = unlist(batch$action),
+        reward = unlist(batch$reward)
+      )
+    }
+    
+  ),
+  
+  private = list(
+    memory = NULL,
+    i = 1,
+    full = FALSE,
+    max_size = NULL
+  )
+  
+)
+```
+
+With this implementation we can create an instance of the `Experience` class with:
+
+```{r}
+experience <- Experience$new(max_size = 1000)
+```
+
+Then we can add transitions and sample from the replay buffer with:
+
+```{r}
+experience$push(s_t, s_t1, terminal, action, reward)
+experience$sample(size = 32)
+```
+
+Note that the `experience` object is modified in place when pushing elements.
+
+
+
 
 
 

@@ -43,15 +43,17 @@
   <meta property="twitter:description" content="In this article we will implement the famous paper from DeepMind: *Playing Atari &#10;with Deep Reinforcement Learning* in R using Keras. This paper introduced the &#10;first deep learning model that successfully learned control policies directly &#10;from high-dimensional sensory input using reinforcement learning.&#10;"/>
   
   <!--/radix_placeholder_meta_tags-->
+  
+  <meta name="citation_reference" content="citation_title=Advanced r;citation_publication_date=2014;citation_publisher=Taylor &amp; Francis;citation_author=H. Wickham"/>
   <!--radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","creative_commons","repository_url","output"]}},"value":[{"type":"character","attributes":{},"value":["Playing Atari Breakout with Keras and R"]},{"type":"character","attributes":{},"value":["In this article we will implement the famous paper from DeepMind: *Playing Atari \nwith Deep Reinforcement Learning* in R using Keras. This paper introduced the \nfirst deep learning model that successfully learned control policies directly \nfrom high-dimensional sensory input using reinforcement learning.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url","affiliation","affiliation_url"]}},"value":[{"type":"character","attributes":{},"value":["Daniel Falbel"]},{"type":"character","attributes":{},"value":["http://github.com/dfalbel"]},{"type":"character","attributes":{},"value":["Curso-R"]},{"type":"character","attributes":{},"value":["http://curso-r.com"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url","affiliation","affiliation_url"]}},"value":[{"type":"character","attributes":{},"value":["Fernando Barscevicius"]},{"type":"NULL"},{"type":"character","attributes":{},"value":["Curso-R"]},{"type":"character","attributes":{},"value":["http://curso-r.com"]}]}]},{"type":"character","attributes":{},"value":["07-17-2018"]},{"type":"character","attributes":{},"value":["CC BY"]},{"type":"character","attributes":{},"value":["https://github.com/dfalbel/rl-keras"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["radix::radix_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","creative_commons","repository_url","output","bibliography"]}},"value":[{"type":"character","attributes":{},"value":["Playing Atari Breakout with Keras and R"]},{"type":"character","attributes":{},"value":["In this article we will implement the famous paper from DeepMind: *Playing Atari \nwith Deep Reinforcement Learning* in R using Keras. This paper introduced the \nfirst deep learning model that successfully learned control policies directly \nfrom high-dimensional sensory input using reinforcement learning.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url","affiliation","affiliation_url"]}},"value":[{"type":"character","attributes":{},"value":["Daniel Falbel"]},{"type":"character","attributes":{},"value":["http://github.com/dfalbel"]},{"type":"character","attributes":{},"value":["Curso-R"]},{"type":"character","attributes":{},"value":["http://curso-r.com"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url","affiliation","affiliation_url"]}},"value":[{"type":"character","attributes":{},"value":["Fernando Barscevicius"]},{"type":"NULL"},{"type":"character","attributes":{},"value":["Marketdata"]},{"type":"character","attributes":{},"value":["http://marketdata.com.br"]}]}]},{"type":"character","attributes":{},"value":["07-17-2018"]},{"type":"character","attributes":{},"value":["CC BY"]},{"type":"character","attributes":{},"value":["https://github.com/dfalbel/rl-keras"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["radix::radix_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"character","attributes":{},"value":["biblio.bib"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["model_weigths.hdf5"]}
+  {"type":"character","attributes":{},"value":["article_files/bowser-1.9.3/bowser.min.js","article_files/distill-2.2.21/template.v2.js","article_files/jquery-1.11.3/jquery.min.js","article_files/webcomponents-2.0.0/webcomponents.js","biblio.bib"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -826,7 +828,7 @@
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Playing Atari Breakout with Keras and R","description":"In this article we will implement the famous paper from DeepMind: *Playing Atari \nwith Deep Reinforcement Learning* in R using Keras. This paper introduced the \nfirst deep learning model that successfully learned control policies directly \nfrom high-dimensional sensory input using reinforcement learning.\n","authors":[{"author":"Daniel Falbel","authorURL":"http://github.com/dfalbel","affiliation":"Curso-R","affiliationURL":"http://curso-r.com"},{"author":"Fernando Barscevicius","authorURL":"#","affiliation":"Curso-R","affiliationURL":"http://curso-r.com"}],"publishedDate":"2018-07-17T00:00:00.000-03:00","citationText":"Falbel & Barscevicius, 2018"}
+{"title":"Playing Atari Breakout with Keras and R","description":"In this article we will implement the famous paper from DeepMind: *Playing Atari \nwith Deep Reinforcement Learning* in R using Keras. This paper introduced the \nfirst deep learning model that successfully learned control policies directly \nfrom high-dimensional sensory input using reinforcement learning.\n","authors":[{"author":"Daniel Falbel","authorURL":"http://github.com/dfalbel","affiliation":"Curso-R","affiliationURL":"http://curso-r.com"},{"author":"Fernando Barscevicius","authorURL":"#","affiliation":"Marketdata","affiliationURL":"http://marketdata.com.br"}],"publishedDate":"2018-07-17T00:00:00.000-03:00","citationText":"Falbel & Barscevicius, 2018"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -843,7 +845,7 @@
 <div class="d-byline">
   Daniel Falbel <a href="http://github.com/dfalbel" class="uri">http://github.com/dfalbel</a> (Curso-R)<a href="http://curso-r.com" class="uri">http://curso-r.com</a>
   
-,   Fernando Barscevicius  (Curso-R)<a href="http://curso-r.com" class="uri">http://curso-r.com</a>
+,   Fernando Barscevicius  (Marketdata)<a href="http://marketdata.com.br" class="uri">http://marketdata.com.br</a>
   
 <br/>07-17-2018
 </div>
@@ -879,7 +881,12 @@ library(reticulate)
 py_install(&quot;gym[atari]&quot;, envname = &quot;r-tensorflow&quot;)</code></pre>
 </div>
 <p>You must be careful to install it to the same environment that Keras and TensorFlow are installed since we will need to load all of them in the same session. Gym has lot’s of dependencies that are not installed by default, to install the Atari dependencies that we are going to use we used <code>gym[atari]</code> in the pip package name.</p>
-<p>Now that we have Gym installed we can “make” an environment and run some random actions to understand how it works.</p>
+<p>Now that we have Gym installed we can “make” an environment and run some random actions to understand how it works. We are going to use an environment called BreakoutDeterministic-v4. It differs from the canonical Breakout-v0 in two ways related noise added when performing actions:</p>
+<ul>
+<li>It doesn’t repeat the performed action for more randomly chosen number of frames.</li>
+<li>It doesn’t randomly repeat the previous action.</li>
+</ul>
+<p>These differences make BreakoutDeterministic-v4 easier to learn than Breakout-v0.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 gym &lt;- import(&quot;gym&quot;)
@@ -892,9 +899,151 @@ initial_state &lt;- env$reset()</code></pre>
 <pre class="r"><code>
 result &lt;- env$step(action = 0L)</code></pre>
 </div>
-<p>Gym does not document which action is performed by each integer value, but we can figure out by running actions in the emulator and looking at the rendered output. We can also get the number of possible actions by accessing the <code>env$action_space$n</code> member.</p>
-<p>In our particular case, ie. the Atari Breakout game, there are 4 possible actions and the following table maps actions to corresponding integer values.</p>
-<div class="line-block"></div>
+<p>The output of running a <code>step</code> in the environment is the next state of the game. The sate is represented by a list with the following structure:</p>
+<pre><code>
+List of 4
+ $ : int [1:210, 1:160, 1:3] 0 0 0 0 0 0 0 0 0 0 ...
+ $ : num 0
+ $ : logi FALSE
+ $ :List of 1
+  ..$ ale.lives: int 5</code></pre>
+<p>The first element is an RGB array of the next frame, the second element is the reward received by performing the action and the thir is a boolean value indicating if the game has ended. The fourth element can contain other informations about the game, in this case, it returns the number of lives.</p>
+<p>We can get the meaning of each action with <code>env.unwrapped.get_action_meanings()</code>. In our particular case, ie. the Atari Breakout game, there are 4 possible actions and the following table maps actions to corresponding integer values.</p>
+<div class="layout-chunk" data-layout="l-body">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Action</th>
+<th style="text-align: right;">Integer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">NOOP (Do nothing)</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FIRE (Get the ball)</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RIGHT</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LEFT</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="pre-processing">Pre-processing</h2>
+<p>Now that we know about Gym, let’s define some functions to preprocess the state before saving it to our experience memory. We will transform each frame to grayscale since the colors doesn’t matter in this game and then we will rescale the image to save RAM memory.</p>
+<p>We implemented 3 functions to do this:</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+# transforms the input image to grayscale
+grayscale &lt;- function(x) {
+  dims &lt;- c(dim(x)[-3], 1)
+  x &lt;- (x[,,1, drop = FALSE] + x[,,2, drop = FALSE] + x[,,3, drop = FALSE])/3
+  array(as.integer(x), dim = dims)
+}
+
+# reduces the scale of the image by skiping some pixels
+downsample &lt;- function(x, by = 2) {
+  dims &lt;- dim(x)
+  x[seq(1, to = dims[1], by = by), seq(1, to = dims[2], by = by),]
+}
+
+# does both downsampling and grayscale.
+preprocess &lt;- function (x) {
+  x %&gt;%
+    downsample(by = 4) %&gt;%
+    grayscale()
+}</code></pre>
+</div>
+<p>It’s important to note that inside <code>grayscale</code> we transformed the resulting array to an integer array in order to save memmory.</p>
+<h2 id="experience">Experience</h2>
+<p>Now let’s define an auxiliary class that will help us to keep the replay memory. Since we have to keep a large list of states, we need to take care to avoid copies. This is challeging in R because of the <em>copy-on-modify</em> beahvior.<span class="citation" data-cites="wickham2014advanced">(Wickham <a href="#ref-wickham2014advanced">2014</a>)</span>. We implement an <code>R6</code> class manage storing and sampling from the replay memory.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+Experience &lt;- R6::R6Class(
+  &quot;Experience&quot;,
+  
+  public = list(
+    
+    # class initialization
+    initialize = function(max_size = 100000) {
+      private$memory &lt;- vector(mode = &quot;list&quot;, max_size)
+      private$max_size &lt;- max_size
+    },
+    
+    # adds transitions to the replay memory
+    push = function(s_t, s_t1, terminal, action, reward) {
+      
+      private$memory[[private$i]] &lt;- list(
+        s_t = s_t,
+        s_t1 = s_t1,
+        terminal = as.logical(terminal),
+        action = as.integer(action),
+        reward = reward
+      )
+      
+      if (private$i == private$max_size) {
+        private$i &lt;- 1L
+        private$full &lt;- TRUE
+      } else {
+        private$i &lt;- private$i + 1 
+      }
+      
+      invisible(TRUE)
+    },
+    
+    # sample elements from the replay buffer
+    sample = function(size = 32) {
+      
+      n &lt;- ifelse(private$full, private$max_size, private$i - 1)
+      ids &lt;- sample.int(n, size)
+      
+      batch &lt;- purrr::transpose(private$memory[ids])
+      
+      list(
+        s_t = abind::abind(batch$s_t, along = 0.1),
+        s_t1 = abind::abind(batch$s_t1, along = 0.1),
+        terminal = unlist(batch$terminal),
+        action = unlist(batch$action),
+        reward = unlist(batch$reward)
+      )
+    }
+    
+  ),
+  
+  private = list(
+    memory = NULL,
+    i = 1,
+    full = FALSE,
+    max_size = NULL
+  )
+  
+)</code></pre>
+</div>
+<p>With this implementation we can create an instance of the <code>Experience</code> class with:</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+experience &lt;- Experience$new(max_size = 1000)</code></pre>
+</div>
+<p>Then we can add transitions and sample from the replay buffer with:</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+experience$push(s_t, s_t1, terminal, action, reward)
+experience$sample(size = 32)</code></pre>
+</div>
+<p>Note that the <code>experience</code> object is modified in place when pushing elements.</p>
+<div id="refs" class="references">
+<div id="ref-wickham2014advanced">
+<p>Wickham, H. 2014. <em>Advanced R</em>. Chapman &amp; Hall/Crc the R Series. Taylor &amp; Francis. <a href="https://books.google.com.br/books?id=PFHFNAEACAAJ" class="uri">https://books.google.com.br/books?id=PFHFNAEACAAJ</a>.</p>
+</div>
+</div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -921,6 +1070,18 @@ result &lt;- env$step(action = 0L)</code></pre>
 <h3 id="reuse">Reuse</h3>
 <p>Text and figures are licensed under Creative Commons Attribution <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Source code is available at <a href="https://github.com/dfalbel/rl-keras">https://github.com/dfalbel/rl-keras</a>, unless otherwise noted. The figures that have been reused from other sources don't fall under this license and can be recognized by a note in their caption: "Figure from ...".</p>
 </div>
+<script id="distill-bibliography" type="text/bibtex">
+@book{wickham2014advanced,
+  title={Advanced R},
+  author={Wickham, H.},
+  isbn={9781466586963},
+  lccn={2012278240},
+  series={Chapman \& Hall/CRC The R Series},
+  url={https://books.google.com.br/books?id=PFHFNAEACAAJ},
+  year={2014},
+  publisher={Taylor \& Francis}
+}
+</script>
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <!--/radix_placeholder_navigation_after_body-->
