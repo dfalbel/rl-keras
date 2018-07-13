@@ -1,21 +1,15 @@
 Experience <- R6::R6Class(
-  
   "Experience",
-  
   public = list(
-    
-    i = 1,
-    full = FALSE,
-    max_size = NULL,
     
     initialize = function(max_size = 100000) {
       private$memory <- vector(mode = "list", max_size)
-      self$max_size <- max_size
+      private$max_size <- max_size
     },
     
     sample = function(size = 32) {
       
-      n <- ifelse(self$full, self$max_size, self$i - 1)
+      n <- ifelse(private$full, private$max_size, private$i - 1)
       ids <- sample.int(n, size)
       
       batch <- transpose(private$memory[ids])
@@ -31,7 +25,7 @@ Experience <- R6::R6Class(
     
     push = function(s_t, s_t1, terminal, action, reward) {
       
-      private$memory[[self$i]] <- list(
+      private$memory[[private$i]] <- list(
         s_t = s_t,
         s_t1 = s_t1,
         terminal = as.logical(terminal),
@@ -39,11 +33,11 @@ Experience <- R6::R6Class(
         reward = reward
       )
       
-      if (self$i == self$max_size) {
-        self$i <- 1L
-        self$full <- TRUE
+      if (private$i == private$max_size) {
+        private$i <- 1L
+        private$full <- TRUE
       } else {
-        self$i <- self$i + 1 
+        private$i <- private$i + 1 
       }
       
       invisible(TRUE)
@@ -52,7 +46,10 @@ Experience <- R6::R6Class(
   ),
   
   private = list(
-    memory = NULL
+    memory = NULL,
+    i = 1,
+    full = FALSE,
+    max_size = NULL
   )
   
 )
