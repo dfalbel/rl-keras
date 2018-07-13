@@ -5,7 +5,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 ```
 
 In this article we will implement the famous paper from DeepMind: [*Playing Atari with Deep Reinforcement Learning*](https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf) in R using Keras. This paper introduced the first deep learning model that successfully learned control policies directly from high-dimensional sensory input using reinforcement learning.
@@ -32,10 +32,28 @@ Put in simple terms, Q-learning is an algorithm that allows for the selection of
 
 ## Deep Q-Learning
 
+### Frame stacking
+
+### Experience Replay
+
 # Implementation in R
+
+Now we will start implementing the Deep Q-Learning algorithm in R. But first, we need a game emulator. That's where [OpenAI gym](https://gym.openai.com) comes handy. 
 
 ## Gym
 
+> Gym is a toolkit for developing and comparing reinforcement learning algorithms. It supports teaching agents everything from walking to playing games like Pong or Pinball.
+
+The `gym` framework is available to python and we will use reticulate to run it from R. To install it, you can run:
+
+```{r}
+library(reticulate)
+py_install("gym[atari]", envname = "r-tensorflow")
+```
+
+You must be careful to install it to the same environment that Keras and TensorFlow are installed since we will need to load all of them in the same session. Gym has lot's of dependencies that are not installed by default, to install the Atari dependencies that we are going to use we used `gym[atari]` in the pip package name.
+
+Now that we have Gym installed we can "make" an environment and run some random actions to understand how it works.
 
 
 
