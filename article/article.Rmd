@@ -287,7 +287,10 @@ play_episode <- function(env, epsilon, models, experience, train, render = FALSE
     if (runif(1) < epsilon) {
       action <- env$action_space$sample()
     } else {
-      score_predictions <- predict(models$score_model, abind(s_t, along = 0.1))
+      score_predictions <- predict(
+        models$score_model, 
+        abind::abind(s_t, along = 0.1) # expand the first dimension 
+      )
       action <- which.max(score_predictions) - 1L
     }
     
@@ -322,6 +325,77 @@ play_episode <- function(env, epsilon, models, experience, train, render = FALSE
 ```
 
 Since `experience` and `models` are modified in place we don't need to return them to persist their values. Note that unlike many other R functions `play_episode` has lot's of side-effects.
+
+## Model
+
+As discussed in the Deep Q-Learning section, the model we are going to implement is a convolutional neural network that will have 4 previous stacked frames as input to predict the future expected reward for each possible action. 
+
+The implementation problem is that at training time, we only have the reward obtained by performed the selected action. This can be solved by masking the other values as we will see in the `build_model` function below.
+
+```{r}
+build_model <- function(input_shape, n_actions = 4) {
+  
+  # input layer
+  input <- layer_input(input_shape)
+  
+  # creates the output layer.
+  # gives a vector of `n_actions` elements with the expected reward of performing
+  # each action
+  output <- input %>%
+    layer_lambda(function(x) {x/255}) %>%
+    layer_conv_2d(
+      filters = 16, 
+      kernel_size = c(8,8), 
+      strides = c(4,4), 
+      activation = "relu"
+    ) %>%
+    layer_conv_2d(
+      filters = 32, 
+      kernel_size = c(4,4), 
+      strides = c(2,2), 
+      activation = "relu"
+    ) %>%
+    layer_flatten() %>%
+    layer_dense(256, activation = "relu") %>%
+    layer_dense(n_actions)
+  
+  # creates what we called the `score_model`;
+  # predict(score_model, x = x) will return the expected reward for each possible
+  # action. 
+  score_model <- keras_model(input, output)
+  
+  # input layer for the action. The action is encoded as a one-hot vector.
+  action <- layer_input(shape = n_actions)
+  
+  # get the expected reward by performing `action`.
+  expected_reward <- layer_multiply(list(output, action)) %>%
+   layer_lambda(f = function(x) k_sum(x, axis = 2, keepdims = TRUE))
+  
+  # creates the `action_model`. As input this model needs the previous observed
+  # state and the selection. It will output the expected reward of performing the 
+  # `action`.
+  action_model <- keras_model(list(input, action), expected_reward)
+  
+  # we compile the action model chossing the Mean Squared Error loss and 
+  # the Adam optimizer with learning_rate = 0.0001.
+  action_model %>%
+    compile(
+      loss = "mse",
+      optimizer = keras::optimizer_adam(lr = 0.0001)
+    )
+  
+  # Finally, we return both models in a list.
+  list(
+    score_model = score_model,
+    action_model = action_model
+  )
+}
+```
+
+The most important thing to note here is that `action_model` and `score_model` share all weights. This is important because we will not directly train the `score model`. Instead we will train the `action_model` using gradient descent and use the `score_model` just to get predictions of rewards for each action.
+
+
+
 
 
 
