@@ -15,7 +15,7 @@ preprocess <- function (x) {
     grayscale()
 }
 
-restart_env <- function(env) {
+reset_env <- function(env) {
   list(
     s_t = env$reset() %>%
       preprocess() %>%
@@ -26,7 +26,7 @@ restart_env <- function(env) {
 
 play_episode <- function(env, epsilon, models, experience, train) {
   
-  c(s_t, terminal) %<-% restart_env(env)
+  c(s_t, terminal) %<-% reset_env(env)
   score <- 0
   while(!terminal) {
     

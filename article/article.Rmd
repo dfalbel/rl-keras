@@ -230,10 +230,98 @@ experience$sample(size = 32)
 
 Note that the `experience` object is modified in place when pushing elements.
 
+## Playing a game
+
+We can now implement a function to play an *episode*, ie. a full match, of the game.
+First we implemented an auxiliary function that will reset the environment and return a first valid state.
+
+```{r}
+reset_env <- function(env) {
+  list(
+    s_t = env$reset() %>%
+      preprocess() %>%                     # do preprocessing
+      abind::abind(., ., ., ., along = 3), # stack the first frame 4 times
+    terminal = FALSE
+  )
+}
+```
+
+Now we will implement the `play_episode` function. Most of the logic of the DQN 
+algorithm is implemented here. It's inputs are:
+
+* `env`: an environment created by `gym$make`.
+* `epsilon`: a numeric value (between 0 and 1) giving the probability of performing a random action. If 1 will perform all actions randomly and if 0, all actions will be chosen by the model.
+* `models`: the models (we will detail in the next section)
+* `experience`: an instance of the `Experience` class defined in the previous section.
+* `train`: a boolean indicating if we will perform (or not) a training step. (we will also detail it later).
+* `render`: a boolean indicating if you want to render the game. We recommend disabling it since it may slow down training.
+
+The returned value of `play_episode` is the score attended by the algorithm.
+
+<aside>
+It's important to be familiar with the `%<-%` operator from the [zeallot package](https://github.com/r-lib/zeallot). The `%<-%` operator unpacks a list of values while assigning, for example:
+
+```{r}
+c(x, y) %<-% list(0, 1)
+#> x
+#[1] 0
+#> y
+#[1] 1
+```
+</aside>
 
 
+```{r}
+play_episode <- function(env, epsilon, models, experience, train, render = FALSE) {
+  
+  # resets the envinronment to the initial state
+  c(s_t, terminal) %<-% reset_env(env)
+  score <- 0 
+  # while loop until the game ends - lost all 5 lifes or attended the maximum 
+  # number of 10000 frames.
+  while(!terminal) {
+    
+    # this if-else block will choose if the action performed will be random or
+    # if the will use the model to choose the best action. 
+    # the epsilon parameter controls the exploration/exploitation trade-off
+    if (runif(1) < epsilon) {
+      action <- env$action_space$sample()
+    } else {
+      score_predictions <- predict(models$score_model, abind(s_t, along = 0.1))
+      action <- which.max(score_predictions) - 1L
+    }
+    
+    # performs the selected action on the environment
+    c(frame, reward, terminal, lives) %<-% env$step(action)
+    if (render) env$render() # render the game
+    
+    # stacks last 3 frames from the previous state with the frame 
+    # obtained at this timestep.
+    s_t1 <- abind::abind(preprocess(frame), s_t[,,1:3], along = 3)
+    
+    # stores the transiion in the experience buffer.
+    experience$push(
+      s_t = s_t,           # previous state
+      s_t1 = s_t1,         # new state
+      terminal = terminal, # indicates if the game ended
+      action = action,     # stores the performed action
+      reward = reward      # the reward obtained by performing the action
+    )
+    
+    # performs a train step (if selected)
+    if (train) 
+      train_step(models, experience, env$action_space$n)
+    
+    # update state and score
+    s_t <- s_t1
+    score <- score + reward
+  }
+  
+  score
+}
+```
 
-
+Since `experience` and `models` are modified in place we don't need to return them to persist their values. Note that unlike many other R functions `play_episode` has lot's of side-effects.
 
 
 
