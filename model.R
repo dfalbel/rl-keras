@@ -21,7 +21,7 @@ build_model <- function(input_shape = c(210, 160, 4), n_actions = 4) {
   action_model %>%
     compile(
       loss = "mse",
-      optimizer = keras::optimizer_adam(lr = 0.00001)
+      optimizer = keras::optimizer_adam(lr = 0.0001)
     )
   
   list(
