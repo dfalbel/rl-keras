@@ -7,11 +7,11 @@ description: |
   from high-dimensional sensory input using reinforcement learning.
 author:
   - name: Daniel Falbel 
-    url: http://github.com/dfalbel
+    url: https://github.com/dfalbel
     affiliation: Curso-R
     affiliation_url: http://curso-r.com
   - name: Fernando Barscevicius
-    url: 
+    url: https://github.com/feebarscevicius
     affiliation: Marketdata
     affiliation_url: http://marketdata.com.br
 date: 07-17-2018
