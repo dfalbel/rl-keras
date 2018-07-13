@@ -23,6 +23,10 @@ Reinforcement learning is an area of Machine Learning that has been gaining a lo
 
 ## Q-Learning
 
+Q-learning, [as defined by it's creator](https://link.springer.com/content/pdf/10.1007%2FBF00992698.pdf), *is a form of model-free reinforcement learning. It can also be viewed as a method of asynchronous dynamic programming (DP). It provides agents with the capability of learning to act optimally in Markovian domains by experiencing the consequences of actions, without requiring them to build maps of the domains.*
+
+Put in simple terms, Q-learning is an algorithm that allows for the selection of the best possible action to perform given the current state of the environment. It works by assigning each state an estimated value **(Q-value)**. Then, by interacting with the state and receiveing a reward, the estimated value is updated. We can write this Q-value as $\mathbf{Q(s, a)}$ and the updates are given by $\mathbf{Q(s, a) = Q(s, a) + α(R(s) + γmax_{a'}Q(s_0, a_0) − Q(s, a))}$
+
 ## Deep Q-Learning
 
 # Implementation in R
