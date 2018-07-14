@@ -47,15 +47,31 @@ Reinforcement learning is being used to solve many problems in robotics, deliver
 
 Q-learning, [as defined by it's creator](https://link.springer.com/content/pdf/10.1007%2FBF00992698.pdf), *is a form of model-free reinforcement learning. It can also be viewed as a method of asynchronous dynamic programming (DP). It provides agents with the capability of learning to act optimally in Markovian domains by experiencing the consequences of actions, without requiring them to build maps of the domains.*
 
-Put in simple terms, Q-learning is an algorithm that allows for the selection of the best possible action to perform given the current state of the environment. It works by assigning each state an estimated value **(Q-value)**. Then, by interacting with the state and receiveing a reward, the estimated value is updated. We can write this Q-value as $\mathbf{Q(s, a)}$ and the updates are given by $\mathbf{Q(s, a) = Q(s, a) + \alpha(R(s) + γmax_{a'}Q(s_0, a_0) − Q(s, a))}$ (more information about the mathematics and the workings of the Q-learning algorithm can be found [here](http://neuro.cs.ut.ee/demystifying-deep-reinforcement-learning/)).
+Put in simple terms, Q-learning is an algorithm that allows for the selection of the best possible action to perform given the current state of the environment. It works by assigning to each state an estimated value **(Q-value)**. Then, by interacting with the state and receiveing a reward, the estimated value is updated. We can write this Q-value as $\mathbf{Q(s, a)}$ and the updates are given by: $$\mathbf{Q(s, a) = Q(s, a) + \alpha(R(s) + γmax_{a'}Q(s_0, a_0) − Q(s, a))}$$ 
+
+<aside>
+More information about the mathematics and the workings of the Q-learning algorithm can be found [here](http://neuro.cs.ut.ee/demystifying-deep-reinforcement-learning/).
+</aside>
 
 As we have to keep track of the Q-values for every state, storing and updating them in a Q-table, Q-learning can become very ineffective for bigger environments. That's where Deep Q-Learning comes into play, substituting the enormous Q-table for a lighter Neural Network.
 
 ## Deep Q-Learning
 
+In Deep Q-Learning, the Q-table is substituted by a Neural Network mapping the current state to one action. This network approximates the reward based on the state.
+
+![[Schematic illustration of the convolutional neural network. ](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)](dqn.png)
+
+This model has one output for each possible action which represents the Q-value.
+
 ### Frame stacking
 
+There is a problem with feeding the network with a single slice of the state in time: how can it infer motion? How can it take decisions without knowing the direction and speed of the objects in the frame? To solve this problem, we use a preprocessing technique called **frame stacking:** *n* number of frames (usually 4) are stacked together along a time dimension and fed to the model. This allows for the exploitation of spatial and temporal relationships for each step of the algorithm.
+
 ### Experience Replay
+
+There are other problems with DQN: *correlation* and *forgetting*. As each gameplay has higly-correlated sequences of states, the network can be guided to a *local-minima*, which means it ends up learning just to replay the episode. It also tends to override past experiences when updating the weights as new episodes are played. To solve both, we implement the **Experience Replay**: every episode is stored in a memory buffer, and instead of updating the model's weights as the episode goes, the training takes place after the episode ends by randomly selecting sample batches from this memory buffer. As the buffer has information from lots of previous episodes and the sampling breaks the correlation between states of the same episode, both problems are gone!
+
+
 
 # Implementation in R
 
