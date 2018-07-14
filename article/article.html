@@ -53,7 +53,7 @@
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["article_files/bowser-1.9.3/bowser.min.js","article_files/distill-2.2.21/template.v2.js","article_files/jquery-1.11.3/jquery.min.js","article_files/webcomponents-2.0.0/webcomponents.js","biblio.bib","dqn.png"]}
+  {"type":"character","attributes":{},"value":["article_files/bowser-1.9.3/bowser.min.js","article_files/distill-2.2.21/template.v2.js","article_files/jquery-1.11.3/jquery.min.js","article_files/webcomponents-2.0.0/webcomponents.js","biblio.bib","dqn.png","stack.png"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -878,13 +878,38 @@ More information about the mathematics and the workings of the Q-learning algori
 <h2 id="deep-q-learning">Deep Q-Learning</h2>
 <p>In Deep Q-Learning, the Q-table is substituted by a Neural Network mapping the current state to one action. This network approximates the reward based on the state.</p>
 <figure>
-<img src="dqn.png" alt="Schematic illustration of the convolutional neural network." /><figcaption><a href="https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf">Schematic illustration of the convolutional neural network.</a></figcaption>
+<img src="dqn.png" alt="Schematic illustration of the convolutional neural network" /><figcaption><a href="https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf">Schematic illustration of the convolutional neural network</a></figcaption>
 </figure>
 <p>This model has one output for each possible action which represents the Q-value.</p>
 <h3 id="frame-stacking">Frame stacking</h3>
+<figure>
+<img src="stack.png" alt="Frame Stacking" /><figcaption><a href="https://web.stanford.edu/class/cs221/2017/restricted/p-final/vishakh/final.pdf">Frame Stacking</a></figcaption>
+</figure>
 <p>There is a problem with feeding the network with a single slice of the state in time: how can it infer motion? How can it take decisions without knowing the direction and speed of the objects in the frame? To solve this problem, we use a preprocessing technique called <strong>frame stacking:</strong> <em>n</em> number of frames (usually 4) are stacked together along a time dimension and fed to the model. This allows for the exploitation of spatial and temporal relationships for each step of the algorithm.</p>
 <h3 id="experience-replay">Experience Replay</h3>
 <p>There are other problems with DQN: <em>correlation</em> and <em>forgetting</em>. As each gameplay has higly-correlated sequences of states, the network can be guided to a <em>local-minima</em>, which means it ends up learning just to replay the episode. It also tends to override past experiences when updating the weights as new episodes are played. To solve both, we implement the <strong>Experience Replay</strong>: every episode is stored in a memory buffer, and instead of updating the model’s weights as the episode goes, the training takes place after the episode ends by randomly selecting sample batches from this memory buffer. As the buffer has information from lots of previous episodes and the sampling breaks the correlation between states of the same episode, both problems are gone!</p>
+<h3 id="algorithm">Algorithm</h3>
+<pre>
+<b>Deep Q Learning with Experience Replay</b>
+
+Initialize replay memory D to size N
+Initialize action-value function Q with random weights
+<b>for</b> episode = 1, M <b>do</b>
+  Initialize state s<SUB>1</SUB>
+  <b>for</b> t = 1, T <b>do</b>
+    With probability λ select random action a<SUB>t</SUB>
+    Otherwise select a<SUB>t</SUB> = argmax<SUB>a</SUB>Q(s<SUB>t</SUB>, a; θ<SUB>i</SUB>)
+    Execute action a<SUB>t</SUB> in emulator and observe reward r<SUB>t</SUB> and image x<SUB>t+1</SUB>
+    Set s<SUB>t+1</SUB> = {s<SUB>t</SUB>, a<SUB>t</SUB>, x<SUB>t+1</SUB>} and preprocess Φ<SUB>t+1</SUB> = Φ(s<SUB>t</SUB> + 1)
+    Store transition (s<SUB>t</SUB>, a<SUB>t</SUB>, r<SUB>t</SUB>, s<SUB>t+1</SUB>) in D
+      Set y<SUB>j</SUB>:= r<SUB>j</SUB> for terminal s<SUB>j+1</SUB>
+      Set y<SUB>j</SUB>:= r<SUB>j</SUB> + γ max a<SUB>0</SUB>Q(Φ<SUB>j+1</SUB>, a<SUB>0</SUB>; θ) for non terminal φ<SUB>j+1</SUB>
+    Sample a minibatch of transitions (s<SUB>j</SUB>, a<SUB>j</SUB>, r<SUB>j</SUB>, s<SUB>j+1</SUB>) from D
+    Perform a gradient step on (y<SUB>j</SUB> − Q(s<SUB>j</SUB>, a<SUB>j</SUB>; θ<SUB>i</SUB>))<SUP>2</SUP> with respect to θ
+  <b>return</b>
+<b>return</b>
+
+</pre>
 <h1 id="implementation-in-r">Implementation in R</h1>
 <p>Now we will start implementing the Deep Q-Learning algorithm in R. But first, we need a game emulator. That’s where <a href="https://gym.openai.com">OpenAI gym</a> comes handy.</p>
 <h2 id="gym">Gym</h2>
