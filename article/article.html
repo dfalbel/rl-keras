@@ -781,13 +781,6 @@
         $(this).attr('href', $(this).attr('href') + "index.html");
     });
   
-    // get rid of index.html references in header
-    if (window.location.protocol !== "file:") {
-      $('.radix-site-header a').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
-      });
-    }
-  
     // add class to pandoc style tables
     $('tr.header').parent('thead').parent('table').addClass('pandoc-table');
     $('.kable-table').children('table').addClass('pandoc-table');
@@ -1232,7 +1225,90 @@ build_model &lt;- function(input_shape, n_actions = 4) {
   )
 }</code></pre>
 </div>
-<p>The most important thing to note here is that <code>action_model</code> and <code>score_model</code> share all weights. This is important because we will not directly train the <code>score model</code>. Instead we will train the <code>action_model</code> using gradient descent and use the <code>score_model</code> just to get predictions of rewards for each action.</p>
+<p>The most important thing to note here is that <code>action_model</code> and <code>score_model</code> share all weights. This is important because we will not directly train the <code>score_model</code>. Instead we will train the <code>action_model</code> using gradient descent and use the <code>score_model</code> just to get predictions of rewards for each action.</p>
+<p>Now we will define a function that will perform a step of the gradient descent algorithm to update the models weights.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+train_step &lt;- function(models, experience, n_actions) {
+
+  # sampling a minibatch of size 32 from the experience buffer
+  c(s_t, s_t1, terminal, action, reward) %&lt;-% experience$sample(32)
+  
+  # calculating the expected reward for s_t1
+  expected_reward &lt;- predict(models$score_model, s_t1) %&gt;% apply(1, max)
+  
+  # calculating the Q value for state_t
+  y &lt;- reward + (!terminal)*gamma*expected_reward
+  
+  # transforming the action to a one-hot vector
+  action &lt;- to_categorical(action, n_actions)
+  
+  # perform the weights update with gradient descent
+  loss &lt;- train_on_batch(
+    models$action_model, 
+    x = list(s_t, action),
+    y = y
+  )
+  
+  # returns the obtained loss invisibly
+  invisible(loss)
+}</code></pre>
+</div>
+<h2 id="final-loop">Final loop</h2>
+<p>Now that we have all auxiliary functions we are ready to implement the final loop. First let’s define all the hyperparameters that will control the training phase.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+observe &lt;- 500 # number of episodes to observe before starting training
+explore &lt;- 4000 # nuber of episodes to do exploration
+episodes &lt;- 5000 # total number of episodes
+replay_memory &lt;- 100000 # number of transitions to remember
+environment_name &lt;- &quot;BreakoutDeterministic-v4&quot; # name of the gym environment 
+initial_epsilon &lt;- 1 # initial probability of choosing a random action
+final_epsilon &lt;- 0.1 # after `explore` iterations what should be the probability of choosing a rondom action
+gamma &lt;- 0.99 # gamma from q-learning
+input_shape &lt;- c(53, 40, 4) # size of the pre-processed array</code></pre>
+</div>
+<p>Now let’s start our objects:</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+env &lt;- gym$make(environment_name)
+experience &lt;- Experience$new(replay_memory)
+history &lt;- rep(NA, episodes)
+models &lt;- build_model(input_shape, env$action_space$n)
+epsilon &lt;- 1L</code></pre>
+</div>
+<p>And run the final loop:</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+for (i in seq_len(episodes)) {
+  
+  if (i &gt;= observe &amp; i &lt; (observe + explore)) 
+    epsilon &lt;- epsilon - (initial_epsilon/final_epsilon) / explore
+  
+  if (i &gt;= observe)
+    train &lt;- TRUE
+  else 
+    train &lt;- FALSE
+  
+  time &lt;- system.time({
+    history[i] &lt;- play_episode(env, epsilon, models, experience, train)  
+  })
+  
+  last100 &lt;- tail(history[!is.na(history)], 100) %&gt;% mean() %&gt;% round(2)
+  time &lt;- round(time[3], 2)
+  
+  # save model weights
+  if(i %% 500 == 0)
+    save_model_weights_hdf5(
+      models$score_model, 
+      &quot;model_weights.hdf5&quot;, 
+      overwrite = TRUE
+    )
+  
+  cat(glue::glue(&quot;Episode: {i} | Score: {history[i]} | Mean: {last100} | Elapsed: {time} sec&quot;), &quot;\n&quot;)
+}</code></pre>
+</div>
+<p>Note, this loop can take a lot of time. It takes ~24h in a MacBook Air.</p>
 <div id="refs" class="references">
 <div id="ref-wickham2014advanced">
 <p>Wickham, H. 2014. <em>Advanced R</em>. Chapman &amp; Hall/Crc the R Series. Taylor &amp; Francis. <a href="https://books.google.com.br/books?id=PFHFNAEACAAJ" class="uri">https://books.google.com.br/books?id=PFHFNAEACAAJ</a>.</p>

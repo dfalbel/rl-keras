@@ -431,9 +431,96 @@ build_model <- function(input_shape, n_actions = 4) {
 }
 ```
 
-The most important thing to note here is that `action_model` and `score_model` share all weights. This is important because we will not directly train the `score model`. Instead we will train the `action_model` using gradient descent and use the `score_model` just to get predictions of rewards for each action.
+The most important thing to note here is that `action_model` and `score_model` share all weights. This is important because we will not directly train the `score_model`. Instead we will train the `action_model` using gradient descent and use the `score_model` just to get predictions of rewards for each action.
 
+Now we will define a function that will perform a step of the gradient descent algorithm to update the models weights.
 
+```{r}
+train_step <- function(models, experience, n_actions) {
+
+  # sampling a minibatch of size 32 from the experience buffer
+  c(s_t, s_t1, terminal, action, reward) %<-% experience$sample(32)
+  
+  # calculating the expected reward for s_t1
+  expected_reward <- predict(models$score_model, s_t1) %>% apply(1, max)
+  
+  # calculating the Q value for state_t
+  y <- reward + (!terminal)*gamma*expected_reward
+  
+  # transforming the action to a one-hot vector
+  action <- to_categorical(action, n_actions)
+  
+  # perform the weights update with gradient descent
+  loss <- train_on_batch(
+    models$action_model, 
+    x = list(s_t, action),
+    y = y
+  )
+  
+  # returns the obtained loss invisibly
+  invisible(loss)
+}
+```
+
+## Final loop
+
+Now that we have all auxiliary functions we are ready to implement the final loop. First let's define all the hyperparameters that will control the training phase.
+
+```{r}
+observe <- 500 # number of episodes to observe before starting training
+explore <- 4000 # nuber of episodes to do exploration
+episodes <- 5000 # total number of episodes
+replay_memory <- 100000 # number of transitions to remember
+environment_name <- "BreakoutDeterministic-v4" # name of the gym environment 
+initial_epsilon <- 1 # initial probability of choosing a random action
+final_epsilon <- 0.1 # after `explore` iterations what should be the probability of choosing a rondom action
+gamma <- 0.99 # gamma from q-learning
+input_shape <- c(53, 40, 4) # size of the pre-processed array
+```
+
+Now let's start our objects:
+
+```{r}
+env <- gym$make(environment_name)
+experience <- Experience$new(replay_memory)
+history <- rep(NA, episodes)
+models <- build_model(input_shape, env$action_space$n)
+epsilon <- 1L
+```
+
+And run the final loop:
+
+```{r}
+for (i in seq_len(episodes)) {
+  
+  if (i >= observe & i < (observe + explore)) 
+    epsilon <- epsilon - (initial_epsilon/final_epsilon) / explore
+  
+  if (i >= observe)
+    train <- TRUE
+  else 
+    train <- FALSE
+  
+  time <- system.time({
+    history[i] <- play_episode(env, epsilon, models, experience, train)  
+  })
+  
+  last100 <- tail(history[!is.na(history)], 100) %>% mean() %>% round(2)
+  time <- round(time[3], 2)
+  
+  # save model weights
+  if(i %% 500 == 0)
+    save_model_weights_hdf5(
+      models$score_model, 
+      "model_weights.hdf5", 
+      overwrite = TRUE
+    )
+  
+  cat(glue::glue("Episode: {i} | Score: {history[i]} | Mean: {last100} | Elapsed: {time} sec"), "\n")
+}
+```
+
+Note, this loop can take a lot of time. It takes ~24h in a MacBook Air.
 
 
 
