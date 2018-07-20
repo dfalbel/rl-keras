@@ -3,3 +3,4 @@
 .RData
 .Ruserdata
 *.hdf5
+/buffer*

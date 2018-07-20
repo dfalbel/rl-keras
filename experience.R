@@ -9,7 +9,7 @@ Experience <- R6::R6Class(
       }
       
       private$path <- path
-      private$memory <- storr::storr_rds(private$path)
+      private$memory <- storr::storr_rds(private$path, compress = FALSE)
       private$max_size <- max_size
     },
     
@@ -46,7 +46,7 @@ Experience <- R6::R6Class(
         private$i <- 1L
         private$full <- TRUE
       } else {
-        private$i <- private$i + 1 
+        private$i <- private$i + 1L 
       }
       
       invisible(TRUE)
@@ -57,7 +57,7 @@ Experience <- R6::R6Class(
   private = list(
     path = NULL,
     memory = NULL,
-    i = 1,
+    i = 1L,
     full = FALSE,
     max_size = NULL
   )
