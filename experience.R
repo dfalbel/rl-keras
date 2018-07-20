@@ -2,8 +2,14 @@ Experience <- R6::R6Class(
   "Experience",
   public = list(
     
-    initialize = function(max_size = 100000) {
-      private$memory <- vector(mode = "list", max_size)
+    initialize = function(max_size = 100000, path = NULL) {
+      
+      if (is.null(path)) {
+        path <- tempfile("storr_")
+      }
+      
+      private$path <- path
+      private$memory <- storr::storr_rds(private$path)
       private$max_size <- max_size
     },
     
@@ -12,7 +18,7 @@ Experience <- R6::R6Class(
       n <- ifelse(private$full, private$max_size, private$i - 1)
       ids <- sample.int(n, size)
       
-      batch <- transpose(private$memory[ids])
+      batch <- transpose(private$memory$mget(ids))
       
       list(
         s_t = abind::abind(batch$s_t, along = 0.1),
@@ -25,12 +31,15 @@ Experience <- R6::R6Class(
     
     push = function(s_t, s_t1, terminal, action, reward) {
       
-      private$memory[[private$i]] <- list(
-        s_t = s_t,
-        s_t1 = s_t1,
-        terminal = as.logical(terminal),
-        action = as.integer(action),
-        reward = reward
+      private$memory$set(
+        private$i,
+        list(
+          s_t = s_t,
+          s_t1 = s_t1,
+          terminal = as.logical(terminal),
+          action = as.integer(action),
+          reward = reward
+        )
       )
       
       if (private$i == private$max_size) {
@@ -46,6 +55,7 @@ Experience <- R6::R6Class(
   ),
   
   private = list(
+    path = NULL,
     memory = NULL,
     i = 1,
     full = FALSE,
