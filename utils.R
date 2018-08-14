@@ -24,10 +24,11 @@ reset_env <- function(env) {
   )
 }
 
-play_episode <- function(env, epsilon, models, experience, train) {
+play_episode <- function(env, epsilon, models, experience, train, train_prob) {
   
   c(s_t, terminal) %<-% reset_env(env)
   score <- 0
+  t <- 0
   while(!terminal) {
     
     if (runif(1) < epsilon) {
@@ -38,28 +39,31 @@ play_episode <- function(env, epsilon, models, experience, train) {
     }
     
     c(frame, reward, terminal, lives) %<-% env$step(action)
-    s_t1 <- abind::abind(preprocess(frame), s_t[,,1:3], along = 3)
+    frame <- preprocess(frame)
+    
+    s_t1 <- abind::abind(frame, s_t[,,1:3], along = 3)
     
     experience$push(
-      s_t = s_t,
-      s_t1 = s_t1,
+      frame = frame,
       terminal = terminal,
       action = action,
       reward = reward
     )
     
-    if (train) 
+    if (train & runif(1) < train_prob) 
       train_step(models, experience, env$action_space$n)
     
     s_t <- s_t1
     score <- score + reward
+    t <- t + 1
   }
   
+  cat("| t: ", t)
   score
 }
 
 train_step <- function(models, experience, n_actions) {
-
+  
   c(s_t, s_t1, terminal, action, reward) %<-% experience$sample(32)
   
   

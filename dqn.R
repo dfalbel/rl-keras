@@ -14,6 +14,7 @@ observe <- 500 # number of episodes to observe before starting training
 explore <- 9500 # nuber of episodes to do exploration
 episodes <- 10000 # total number of episodes
 replay_memory <- 1000000 # number of transitions to remember
+train_prob <- 0.25 # probability of training in each step
 path_replay_buffer <- "buffer"
 environment_name <- "BreakoutDeterministic-v4"
 initial_epsilon <- 1
@@ -42,7 +43,7 @@ for (i in seq_len(episodes)) {
     train <- FALSE
   
   time <- system.time({
-    history[i] <- play_episode(env, epsilon, models, experience, train)  
+    history[i] <- play_episode(env, epsilon, models, experience, train, train_prob)  
   })
   
   last100 <- tail(history[!is.na(history)], 100) %>% mean() %>% round(2)
