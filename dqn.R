@@ -26,7 +26,7 @@ gamma <- 0.99
 
 input_shape <- c(53, 40, 4)
 env <- gym$make(environment_name)
-experience <- Experience$new(replay_memory, path = path_replay_buffer)
+experience <- Experience$new(replay_memory)
 history <- rep(NA, episodes)
 models <- build_model(input_shape, env$action_space$n)
 epsilon <- 1L

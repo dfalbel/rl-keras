@@ -2,23 +2,24 @@ Experience <- R6::R6Class(
   "Experience",
   public = list(
     
-    initialize = function(max_size = 100000, path = NULL) {
-      
-      if (is.null(path)) {
-        path <- tempfile("storr_")
-      }
-      
-      private$path <- path
-      private$memory <- storr::storr_rds(private$path, compress = FALSE)
+    initialize = function(max_size = 100000) {
+      private$memory <- DBI::dbConnect(RSQLite::SQLite(), "")
       private$max_size <- max_size
     },
     
     sample = function(size = 32) {
       
       n <- ifelse(private$full, private$max_size, private$i - 1)
-      ids <- sample.int(n, size)
+      ids <- sample.int(n, size) %>% paste(collapse = ", ")
       
-      batch <- transpose(private$memory$mget(ids))
+      df <- DBI::dbGetQuery(
+        private$memory, 
+        glue::glue("select * from where i in ({ids})")
+      )
+      
+      batch <- df$obj %>% 
+        map(unserialize) %>% 
+        transpose(private$memory$mget(ids))
       
       list(
         s_t = abind::abind(batch$s_t, along = 0.1),
@@ -31,17 +32,27 @@ Experience <- R6::R6Class(
     
     push = function(s_t, s_t1, terminal, action, reward) {
       
-      private$memory$set(
-        private$i,
-        list(
-          s_t = s_t,
-          s_t1 = s_t1,
-          terminal = as.logical(terminal),
-          action = as.integer(action),
-          reward = reward
-        )
+      obj <- list(
+        s_t = s_t,
+        s_t1 = s_t1,
+        terminal = as.logical(terminal),
+        action = as.integer(action),
+        reward = reward
       )
       
+      df <- dplyr::data_frame(i = private$i, obj = list(serialize(obj, NULL)))
+      
+      if (private$full) {
+        
+        DBI::dbSendQuery(
+          private$memory, 
+          glue::glue("delete from memory where i = {private$i}")
+        )
+        
+      }
+      
+      DBI::dbWriteTable(private$memory, "memory", df, append = TRUE)
+    
       if (private$i == private$max_size) {
         private$i <- 1L
         private$full <- TRUE
