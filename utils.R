@@ -24,7 +24,7 @@ reset_env <- function(env) {
   )
 }
 
-play_episode <- function(env, epsilon, models, experience, train) {
+play_episode <- function(env, epsilon, models, experience, train_prob) {
   
   c(s_t, terminal) %<-% reset_env(env)
   score <- 0
@@ -48,7 +48,7 @@ play_episode <- function(env, epsilon, models, experience, train) {
       reward = reward
     )
     
-    if (train) 
+    if (runif(1) <= train_prob) 
       train_step(models, experience, env$action_space$n)
     
     s_t <- s_t1

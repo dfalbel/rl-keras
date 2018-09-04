@@ -4,6 +4,16 @@ Experience <- R6::R6Class(
     
     initialize = function(max_size = 100000) {
       private$memory <- DBI::dbConnect(RSQLite::SQLite(), "")
+      
+      DBI::dbExecute(
+        private$memory, 
+        "create table memory (i integer, obj blob)"
+      )
+      DBI::dbExecute(
+        private$memory, 
+        "create index idx_i on memory (i)"
+      )
+      
       private$max_size <- max_size
     },
     
@@ -14,12 +24,12 @@ Experience <- R6::R6Class(
       
       df <- DBI::dbGetQuery(
         private$memory, 
-        glue::glue("select * from where i in ({ids})")
+        glue::glue("select * from memory where i in ({ids})")
       )
       
       batch <- df$obj %>% 
         map(unserialize) %>% 
-        transpose(private$memory$mget(ids))
+        transpose()
       
       list(
         s_t = abind::abind(batch$s_t, along = 0.1),
@@ -52,7 +62,7 @@ Experience <- R6::R6Class(
       }
       
       DBI::dbWriteTable(private$memory, "memory", df, append = TRUE)
-    
+      
       if (private$i == private$max_size) {
         private$i <- 1L
         private$full <- TRUE
