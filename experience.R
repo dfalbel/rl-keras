@@ -14,9 +14,13 @@ Experience <- R6::R6Class(
       
       batch <- transpose(private$memory[ids])
       
+      # creating the next s_t1 state
+      s_t <- abind::abind(map(batch$s_t, abind, along = 3), along = 0.1)
+      s_t1 <- abind::abind(map(batch$s_t1, abind, along = 3), along = 0.1)
+      
       list(
-        s_t = abind::abind(batch$s_t, along = 0.1),
-        s_t1 = abind::abind(batch$s_t1, along = 0.1),
+        s_t = s_t,
+        s_t1 = s_t1,
         terminal = unlist(batch$terminal),
         action = unlist(batch$action),
         reward = unlist(batch$reward)

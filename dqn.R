@@ -10,10 +10,10 @@ source("experience.R")
 
 # parameters --------------------------------------------------------------
 
-observe <- 500 # number of episodes to observe before starting training
+observe <- 100 # number of episodes to observe before starting training
 explore <- 4000 # nuber of episodes to do exploration
 episodes <- 5000 # total number of episodes
-replay_memory <- 100000 # number of transitions to remember
+replay_memory <- 1000000 # number of transitions to remember
 environment_name <- "BreakoutDeterministic-v4"
 initial_epsilon <- 1
 final_epsilon <- 0.1
@@ -54,6 +54,6 @@ for (i in seq_len(episodes)) {
       overwrite = TRUE
     )
   
-  cat(glue::glue("Episode: {i} | Score: {history[i]} | Mean: {last100} | Elapsed: {time} sec"), "\n")
+  cat(glue::glue("Episode: {i} | Score: {history[i]} | Mean: {last100} | Elapsed: {time} sec | Mem used {format_mem(pryr::mem_used())}"), "\n")
 }
 
