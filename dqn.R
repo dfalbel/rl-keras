@@ -10,11 +10,11 @@ source("experience.R")
 
 # parameters --------------------------------------------------------------
 
-observe <- 100 # number of episodes to observe before starting training
-explore <- 4000 # nuber of episodes to do exploration
-episodes <- 5000 # total number of episodes
-replay_memory <- 1000000 # number of transitions to remember
-environment_name <- "BreakoutDeterministic-v4"
+observe <- 30 # number of episodes to observe before starting training
+explore <- 7000 # nuber of episodes to do exploration
+episodes <- 10000 # total number of episodes
+replay_memory <- 100000 # number of transitions to remember
+environment_name <- "PongDeterministic-v4"
 initial_epsilon <- 1
 final_epsilon <- 0.1
 batch_size <- 32
@@ -22,7 +22,7 @@ gamma <- 0.99
 
 # setup -------------------------------------------------------------------
 
-input_shape <- c(53, 40, 4)
+input_shape <- c(105, 80, 4)
 env <- gym$make(environment_name)
 experience <- Experience$new(replay_memory)
 history <- rep(NA, episodes)
@@ -32,7 +32,7 @@ epsilon <- 1L
 for (i in seq_len(episodes)) {
   
   if (i >= observe & i < (observe + explore)) 
-    epsilon <- epsilon - (initial_epsilon/final_epsilon) / explore
+    epsilon <- epsilon - (initial_epsilon - final_epsilon) / explore
   
   if (i >= observe)
     train <- TRUE
@@ -54,6 +54,6 @@ for (i in seq_len(episodes)) {
       overwrite = TRUE
     )
   
-  cat(glue::glue("Episode: {i} | Score: {history[i]} | Mean: {last100} | Elapsed: {time} sec | Mem used {format_mem(pryr::mem_used())}"), "\n")
+  cat(glue::glue("Episode: {i} | Score: {history[i]} | Mean: {last100} | Elapsed: {time} sec | Mem used {format_mem(pryr::mem_used())} | Epsilon {round(epsilon, 3)}"), "\n")
 }
 

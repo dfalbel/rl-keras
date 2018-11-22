@@ -11,7 +11,7 @@ downsample <- function(x, by = 2) {
 
 preprocess <- function (x) {
   x %>%
-    downsample(by = 4) %>%
+    downsample(by = 2) %>%
     grayscale()
 }
 
@@ -24,34 +24,41 @@ reset_env <- function(env) {
   )
 }
 
-play_episode <- function(env, epsilon, models, experience, train) {
+play_episode <- function(env, epsilon, models, experience, train, update_freq = 4) {
   
   c(s_t, terminal) %<-% reset_env(env)
   score <- 0
+  i <- 0
   while(!terminal) {
     
-    if (runif(1) < epsilon) {
-      action <- env$action_space$sample()
-    } else {
-      score_predictions <- predict(
-        models$score_model, 
-        abind(abind(s_t, along = 3), along = 0.1)
-      )
-      action <- which.max(score_predictions) - 1L
+    i <- i + 1
+    
+    if (i %% update_freq == 0 | i == 1) {
+      if (runif(1) < epsilon) {
+        action <- env$action_space$sample()
+      } else {
+        score_predictions <- predict(
+          models$score_model, 
+          abind(abind(s_t, along = 3), along = 0.1)
+        )
+        action <- which.max(score_predictions) - 1L
+      }
     }
     
     c(frame, reward, terminal, lives) %<-% env$step(action)
     s_t1 <- append(list(preprocess(frame)), s_t[1:3])
     
-    experience$push(
-      s_t = s_t,
-      s_t1 = s_t1,
-      terminal = terminal,
-      action = action,
-      reward = sign(reward)
-    )
+    if (i %% update_freq == 0) {
+      experience$push(
+        s_t = s_t,
+        s_t1 = s_t1,
+        terminal = terminal,
+        action = action,
+        reward = sign(reward)
+      ) 
+    }
     
-    if (train & runif(1) <= 0.25) 
+    if (train & (i %% update_freq == 0)) 
       train_step(models, experience, env$action_space$n)
     
     s_t <- s_t1

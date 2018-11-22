@@ -14,14 +14,14 @@ build_model <- function(input_shape = c(210, 160, 4), n_actions = 4) {
   action <- layer_input(shape = n_actions)
   
   scalar <- layer_multiply(list(output, action)) %>%
-   layer_lambda(f = function(x) k_sum(x, axis = 2, keepdims = TRUE))
+   layer_lambda(f = function(x) k_max(x, keepdims = TRUE, axis = 2))
   
   action_model <- keras_model(list(input, action), scalar)
   
   action_model %>%
     compile(
       loss = "mse",
-      optimizer = keras::optimizer_rmsprop(lr = 0.00025)
+      optimizer = optimizer_adam(lr = 1e-5)
     )
   
   list(
